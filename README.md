@@ -1,28 +1,27 @@
-# Gemini CLI Training Course
+# Antigravity CLI Training Course
 
-A comprehensive training course for mastering Google Gemini CLI - the open-source AI agent that brings Gemini directly into your terminal.
+A comprehensive training course for mastering Google's Antigravity CLI (`agy`) - the AI coding agent that brings Gemini, Claude, and open models directly into your terminal.
 
 ## Course Overview
 
-This 5-hour hands-on workshop covers everything from basic installation to advanced MCP configurations, custom commands, and enterprise workflows.
+This 5-hour hands-on workshop covers everything from basic installation to advanced MCP configurations, plugins, and enterprise workflows.
 
 ### What You'll Learn
 
 - **Installation & Setup**: Authentication strategies, environment configuration
 - **Core Commands**: Interactive mode, one-shot prompts, file references
-- **Context Management**: GEMINI.md files, hierarchical context loading
-- **Safety & Control**: Sandbox modes, approval policies, checkpointing
-- **Advanced Features**: MCP integration, extensions, custom commands
+- **Context Management**: AGENTS.md files, hierarchical context loading
+- **Safety & Control**: Sandbox mode, permission rules, Artifact Review
+- **Advanced Features**: MCP integration, plugins, skills, subagents
 - **Practical Skills**: Real-world exercises in Python, JavaScript, and Java
 
 ## Prerequisites
 
-- Node.js 18+ installed
 - Command-line experience
 - Basic programming knowledge in at least one language
 - Git familiarity
-- Docker (optional, for sandbox mode)
-- Google account for API access
+- Google account for sign-in (or an `ANTIGRAVITY_API_KEY`)
+- Node.js 18+ (only needed to run the Slidev presentation locally)
 
 ## Repository Structure
 
@@ -53,30 +52,30 @@ gemini-training/
 
 ## Quick Start
 
-### 1. Install Gemini CLI
+### 1. Install Antigravity CLI
 
 ```bash
-# Via npm (recommended)
-npm install -g @google/gemini-cli
+# macOS / Linux (installs the `agy` binary to ~/.local/bin)
+curl -fsSL https://antigravity.google/cli/install.sh | bash
 
 # Verify installation
-gemini --version
+agy --version
 ```
 
 ### 2. Authenticate
 
 ```bash
-# Set API key (get from https://aistudio.google.com/apikey)
-export GEMINI_API_KEY="your-api-key"
+# First run launches Google Sign-In automatically
+agy
 
-# Or add to ~/.gemini/.env
-echo 'GEMINI_API_KEY=your-api-key' >> ~/.gemini/.env
+# Or use an API key for scripts / headless use
+export ANTIGRAVITY_API_KEY="your-api-key"
 ```
 
 ### 3. Run Your First Command
 
 ```bash
-gemini "Hello! What can you help me with?"
+agy -p "Hello! What can you help me with?"
 ```
 
 ### 4. Start the Training
@@ -109,43 +108,43 @@ npm run dev
 | Practical Applications & Workflows | 45 min |
 | Wrap-up & Q&A | 15 min |
 
-## Key Gemini CLI Features Covered
+## Key Antigravity CLI Features Covered
 
 ### Core Features
-- Interactive REPL and one-shot modes
+- Interactive REPL and one-shot (`-p`) modes
 - File references with `@` syntax
 - Shell integration with `!` prefix
 - Sandbox mode for safe execution
-- YOLO mode for autonomous operation
+- Multi-model: Gemini, Claude, and GPT-OSS via `/model`
 
 ### Configuration
-- GEMINI.md context files (hierarchical)
+- AGENTS.md context files (hierarchical)
 - settings.json customization
-- Environment variables
-- Custom commands
+- Permission rules (`/permissions`)
+- Plugins and skills
 
 ### Advanced Features
-- Model Context Protocol (MCP) servers
-- Extensions system
-- Agent Skills
-- Session management and checkpointing
-- IDE integration (VS Code)
+- Model Context Protocol (MCP) servers (`mcp_config.json`)
+- Plugin system (`agy plugin`)
+- Skills and subagents (`/agent`)
+- Conversation management (SQLite) and Artifact Review
+- Antigravity 2.0 desktop integration (`/export`)
 
-### New in Gemini CLI 0.30 – 0.37
-- Agent Skills stable and default-on; SDK + `SessionContext` (0.30)
-- Policy Engine replaces `--allowed-tools` / `tools.exclude` (0.30)
-- Gemini 3.1 Pro Preview available via `/model` (0.31)
-- Workspace model steering + parallel extension loading (0.32)
-- A2A remote agents over authenticated HTTP (0.33)
-- Plan Mode is default-on; gVisor/LXC sandboxing on Linux (0.34)
-- Multi-registry MCP/extensions, native macOS Seatbelt, Windows sandboxing, Git worktrees (0.36)
-- `Ctrl+G` replaces `Ctrl+X` for external editor; persistent policy approvals (0.37)
+### New in Antigravity CLI 1.0.x
+- Initial 1.0.0 release of the Go-based Antigravity CLI
+- Multi-model sessions: Gemini, Claude, GPT-OSS via `/model` (1.0.5)
+- `models` subcommand + `--model` flag to choose a model (1.0.5)
+- `/permissions` to manage tool permission rules in-CLI (1.0.5)
+- G1 credits with `/credits`, `/usage`, `/quota` (1.0.3)
+- MCP `url` support in `mcp_config.json`; parallel init (1.0.5/1.0.6)
+- SQLite conversation format + `/resume`, `--continue` (1.0.4)
+- Plugin discovery for skills and subagents (1.0.1)
 
 ## Tips for Success
 
-1. **Start in Default Mode**: Get comfortable before enabling YOLO mode
-2. **Use GEMINI.md**: Provide context for better, more consistent results
-3. **Enable Checkpointing**: Save snapshots before risky operations
+1. **Start with default approval**: Get comfortable before `--dangerously-skip-permissions`
+2. **Use AGENTS.md**: Provide context for better, more consistent results
+3. **Use Artifact Review**: Inspect diffs (`Ctrl+R`, `/diff`) before accepting
 4. **Review Generated Code**: Always verify AI-generated changes
 5. **Leverage MCP**: Extend capabilities with custom tools
 
@@ -153,41 +152,39 @@ npm run dev
 
 ```bash
 # Basic usage
-gemini                          # Interactive mode
-gemini "prompt"                 # One-shot mode
-gemini -i "context"             # Interactive with initial prompt
+agy                                 # Interactive mode
+agy -p "prompt"                     # One-shot (print) mode
+agy -i "context"                    # Interactive with initial prompt
 
 # Configuration
-gemini --sandbox                # Run in sandbox mode
-gemini --approval-mode yolo     # Auto-approve all actions
-gemini --model gemini-3-pro     # Specify model (e.g. gemini-3-pro, gemini-2.5-pro)
+agy --sandbox                       # Run in sandbox mode
+agy --dangerously-skip-permissions  # Auto-approve all actions (use with care)
+agy --model "Gemini 3.1 Pro (High)" # Specify a model (see `agy models`)
 
 # Session management
-gemini --resume                 # Resume last session
-gemini --list-sessions          # Show available sessions
+agy -c                              # Continue most recent conversation
+agy --conversation <id>             # Resume a specific conversation
 ```
 
 ## Slash Commands
 
 | Command | Description |
 |---------|-------------|
-| `/help` | Show available commands |
-| `/clear` | Clear conversation history |
-| `/memory show` | View loaded context |
-| `/memory refresh` | Reload GEMINI.md files |
-| `/init` | Generate project GEMINI.md |
-| `/chat save <tag>` | Save conversation |
-| `/resume` | Open session browser |
-| `/rewind` | Navigate/revert session history |
-| `/prompt-suggest` | Get prompt ideas for the current task |
-| `/stats` | Show token/quota/session stats |
-| `/restore` | Recover from checkpoint |
-| `/compress` | Summarize conversation |
+| `/help` | Show available commands and shortcuts |
+| `/context` | View loaded context and token usage |
+| `/model` | Switch the active model mid-session |
+| `/settings` | Open settings and preferences |
+| `/permissions` | Add/edit/remove tool permission rules |
+| `/resume` | Open the conversation browser |
+| `/agent <task>` | Dispatch an asynchronous subagent |
+| `/export` | Send the session to the desktop app |
+| `/diff` | Review changes (supports commit selection) |
+| `/usage` · `/credits` · `/quota` | Quota and credit status |
 
 ## Resources
 
-- [Official Gemini CLI Documentation](https://github.com/google-gemini/gemini-cli)
-- [Google AI Studio](https://aistudio.google.com/) - Get API keys
+- [Official Antigravity CLI Documentation](https://antigravity.google/docs)
+- [Antigravity CLI Source Repository](https://github.com/google-antigravity/antigravity-cli)
 - [MCP Server Registry](https://modelcontextprotocol.io/registry)
 - [Course Slides](./slides.md)
 - [Lab Exercises](./lab_handout.md)
