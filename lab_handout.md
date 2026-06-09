@@ -1,12 +1,12 @@
-# Gemini CLI Training Labs
+# Antigravity CLI Training Labs
 
-This document contains hands-on exercises for learning to use Gemini CLI for professional development workflows.
+This document contains hands-on exercises for learning to use the Antigravity CLI (`agy`) for professional development workflows.
 
 ## Table of Contents
 
 1. [Lab 1: Getting Started and Project Creation](#lab-1-getting-started-and-project-creation)
 2. [Lab 2: Code Exploration](#lab-2-code-exploration)
-3. [Lab 3: GEMINI.md and Context Management](#lab-3-geminimd-and-context-management)
+3. [Lab 3: AGENTS.md and Context Management](#lab-3-agentsmd-and-context-management)
 4. [Lab 4: Test Generation](#lab-4-test-generation)
 5. [Lab 5: Configuration and Safety](#lab-5-configuration-and-safety)
 6. [Lab 6: Advanced Features](#lab-6-advanced-features)
@@ -14,29 +14,32 @@ This document contains hands-on exercises for learning to use Gemini CLI for pro
 
 ## Prerequisites
 
-- Gemini CLI installed: `npm install -g @google/gemini-cli` (version 0.37.x or later)
-- API key set: `export GEMINI_API_KEY="your-key"`
+- Antigravity CLI installed (version 1.0.6 or later):
+  ```bash
+  curl -fsSL https://antigravity.google/cli/install.sh | bash
+  ```
+  This installs the `agy` binary to `~/.local/bin/`. Verify with `agy --version`.
+- Authentication: sign in with your Google account on first run, **or** set
+  `export ANTIGRAVITY_API_KEY="your-key"` for scripts/headless use.
 - Git installed and configured
 - Development environment for Python, JavaScript, or Java
-- Docker (optional, for sandbox mode)
 
-## Heads-up: Plan Mode is the default
+## Heads-up: Tool Permissions
 
-As of Gemini CLI 0.34, `plan` is the default approval mode. When you launch
-`gemini`, it will **draft a plan before executing any tool calls**. For most
-of these labs you'll want to accept the plan (press `Shift+Tab` to cycle
-modes, or accept each step) before commands run. If a step feels "stuck,"
-check whether Gemini is waiting for plan approval.
-
-To skip plan mode entirely for a lab step:
+When `agy` wants to run a tool (edit a file, run a shell command), it prompts
+for approval by default. You can manage allow/deny rules from inside a session
+with `/permissions`. To auto-approve everything for a step, launch with
+`--dangerously-skip-permissions` (use sparingly). To keep file operations
+contained, add `--sandbox`.
 
 ```bash
-gemini --approval-mode default       # per-tool approval
-gemini --approval-mode auto_edit     # auto-approve edits
+agy                                   # default: prompt per tool call
+agy --dangerously-skip-permissions    # auto-approve all (use with care)
+agy --sandbox                         # terminal restrictions enabled
 ```
 
-Also note the keyboard shortcut change in 0.37: **`Ctrl+G`** opens the
-external editor (it used to be `Ctrl+X`).
+Use `Ctrl+R` to open the Artifact Review panel and inspect proposed changes,
+and `Esc` to interrupt the agent mid-stream.
 
 ---
 
@@ -44,7 +47,7 @@ external editor (it used to be `Ctrl+X`).
 
 **Duration**: 25 minutes
 
-**Goal**: Get comfortable with Gemini CLI while building a task manager application from scratch
+**Goal**: Get comfortable with the Antigravity CLI while building a task manager application from scratch
 
 ### Setup
 
@@ -58,9 +61,9 @@ external editor (it used to be `Ctrl+X`).
    git init
    ```
 
-3. Start Gemini CLI:
+3. Start the Antigravity CLI:
    ```bash
-   gemini
+   agy
    ```
 
 ### Exercises
@@ -89,7 +92,7 @@ external editor (it used to be `Ctrl+X`).
    ```
    !ls -la
    ```
-   Use shell commands to see what Gemini created. Observe how the output is displayed.
+   Use shell commands to see what the agent created. Observe how the output is displayed.
 
 4. **Enhanced functionality** *(Stretch Goal - if time permits)*:
    ```
@@ -100,11 +103,11 @@ external editor (it used to be `Ctrl+X`).
    - Colored console output for different statuses
    ```
 
-5. **Check context and memory**:
+5. **Check context and tokens**:
    ```
-   /memory show
+   /context
    ```
-   See what context Gemini has loaded about your project.
+   See what context the agent has loaded and current token usage.
 
 6. **Testing**:
    ```
@@ -126,8 +129,8 @@ external editor (it used to be `Ctrl+X`).
 8. **Keyboard shortcuts**:
    Before moving to git, try these shortcuts:
    - `Ctrl+L` to clear the screen
-   - `Ctrl+Y` to toggle YOLO mode (observe the indicator change)
-   - `Ctrl+Y` again to toggle back to default mode
+   - `Ctrl+R` to open the Artifact Review panel (review proposed changes)
+   - `Esc` to interrupt the agent if a response runs long
 
 9. **Git workflow**:
    ```
@@ -140,7 +143,7 @@ external editor (it used to be `Ctrl+X`).
 
 ### Expected Outcomes
 
-- Understand Gemini CLI's conversational interface
+- Understand the Antigravity CLI's conversational interface
 - Know essential slash commands and keyboard shortcuts
 - Build a functional application from scratch
 - Experience iterative development with AI assistance
@@ -155,7 +158,7 @@ external editor (it used to be `Ctrl+X`).
 
 **Duration**: 15 minutes
 
-**Goal**: Use Gemini CLI to understand complex codebases
+**Goal**: Use the Antigravity CLI to understand complex codebases
 
 ### Setup
 
@@ -164,7 +167,7 @@ Choose one of the provided exercise projects:
 - `exercises/javascript/task-manager` (Node.js CLI app)
 - `exercises/java/bookstore-api` (Spring Boot REST API)
 
-Navigate to the project directory and start Gemini CLI.
+Navigate to the project directory and start the Antigravity CLI with `agy`.
 
 ### Exercises
 
@@ -217,11 +220,14 @@ Navigate to the project directory and start Gemini CLI.
 
 ---
 
-## Lab 3: GEMINI.md and Context Management
+## Lab 3: AGENTS.md and Context Management
 
 **Duration**: 20 minutes
 
-**Goal**: Set up effective project context using GEMINI.md files
+**Goal**: Set up effective project context using AGENTS.md files
+
+> **Note**: Antigravity uses `AGENTS.md` as its documented context file. It
+> also recognizes `GEMINI.md` and `CLAUDE.md`, so existing files keep working.
 
 ### Setup
 
@@ -229,15 +235,16 @@ Continue with the project from Lab 2, or start fresh in a new directory.
 
 ### Exercises
 
-1. **Generate initial GEMINI.md**:
+1. **Create an initial AGENTS.md**:
    ```
-   /init
+   Create an AGENTS.md for this project summarizing its purpose, tech
+   stack, and how to run it.
    ```
    Review the generated file and understand its structure.
 
 2. **Customize the context**:
    ```
-   Update the GEMINI.md to include:
+   Update AGENTS.md to include:
    - Our team's coding standards (PEP 8 for Python, or equivalent)
    - Preferred testing frameworks and patterns
    - Current sprint focus: implementing caching
@@ -246,7 +253,7 @@ Continue with the project from Lab 2, or start fresh in a new directory.
 
 3. **Test context loading**:
    ```
-   /memory show
+   /context
    ```
    Verify your customizations are loaded.
 
@@ -256,9 +263,9 @@ Continue with the project from Lab 2, or start fresh in a new directory.
    mkdir -p src/api
    ```
 
-   Then ask Gemini:
+   Then ask the agent:
    ```
-   Create a GEMINI.md file for the src/api/ directory that specifies:
+   Create an AGENTS.md file for the src/api/ directory that specifies:
    - All API endpoints should return JSON
    - Use consistent error response format
    - Include request validation
@@ -267,7 +274,7 @@ Continue with the project from Lab 2, or start fresh in a new directory.
 
 5. **Global context setup**:
    ```
-   Help me create a global GEMINI.md at ~/.gemini/GEMINI.md with:
+   Help me create a global AGENTS.md at ~/.gemini/AGENTS.md with:
    - My preferred coding style (concise, well-documented)
    - Common libraries I use across projects
    - My Git commit message format preferences
@@ -275,22 +282,22 @@ Continue with the project from Lab 2, or start fresh in a new directory.
 
 6. **Modular imports**:
    ```
-   Break the project GEMINI.md into modular files:
+   Break the project AGENTS.md into modular files:
    - Create docs/coding-standards.md
    - Create docs/api-guidelines.md
-   - Update GEMINI.md to import these using @docs/coding-standards.md syntax
+   - Update AGENTS.md to import these using @docs/coding-standards.md syntax
    ```
 
-7. **Refresh and verify**:
+7. **Verify**:
    ```
-   /memory refresh
-   /memory show
+   /context
    ```
-   Confirm all contexts are properly loaded.
+   Confirm all contexts are properly loaded (restart the session if you
+   edited files externally).
 
 ### Expected Outcomes
 
-- Create effective GEMINI.md files
+- Create effective AGENTS.md files
 - Understand hierarchical context loading
 - Use modular imports for maintainability
 - Set up global and project-specific context
@@ -303,7 +310,7 @@ Continue with the project from Lab 2, or start fresh in a new directory.
 
 **Duration**: 15 minutes
 
-**Goal**: Generate comprehensive test suites with Gemini CLI
+**Goal**: Generate comprehensive test suites with the Antigravity CLI
 
 ### Setup
 
@@ -379,7 +386,7 @@ Use the project from previous labs or choose a new exercise project with existin
 
 **Duration**: 20 minutes
 
-**Goal**: Configure Gemini CLI for safe, efficient workflows
+**Goal**: Configure the Antigravity CLI for safe, efficient workflows
 
 ### Setup
 
@@ -403,22 +410,21 @@ echo "# Config Test" > README.md
    Create a .gemini/settings.json file with:
    - Use the current nested schema sections (general/ui/tools)
    - Vim mode enabled
-   - Checkpointing enabled
    - Sandbox mode disabled
    - Hide tips set to true
    ```
 
-3. **Tool restrictions**:
+3. **Manage tool permissions**:
    ```
-   Update settings.json to:
-   - Exclude the run_shell_command tool for safety
-   - Use tools.allowed to only allow read_file, write_file, and glob tools
+   /permissions
    ```
+   Add a rule that requires approval for shell commands, and observe how
+   the rules merge across project, user, and CLI settings.
 
 4. **Test sandbox mode**:
    ```bash
    # Start in sandbox mode
-   gemini --sandbox
+   agy --sandbox
    ```
 
    Then try:
@@ -427,9 +433,9 @@ echo "# Config Test" > README.md
    ```
    Observe how sandbox mode affects file operations.
 
-5. **Checkpointing practice**:
+5. **Checkpoints and Artifact Review**:
 
-   Enable checkpointing in settings, then:
+   Create a complex file structure:
    ```
    Create a complex file structure:
    - src/index.js with a basic Express server
@@ -437,41 +443,39 @@ echo "# Config Test" > README.md
    - package.json with dependencies
    ```
 
-   Then:
+   Then inspect what changed before accepting:
    ```
-   /restore
+   /context
    ```
-   View available checkpoints.
+   Use `Ctrl+R` to open the Artifact Review panel and `/diff` to review
+   the changes.
 
-6. **Approval modes**:
+6. **Permission modes**:
    ```bash
-   # Try different approval modes
-   gemini --approval-mode auto_edit
+   # Auto-approve all tool calls (use with care)
+   agy --dangerously-skip-permissions
    ```
 
-   Request a file edit and observe auto-approval behavior.
+   Request a file edit and observe the auto-approval behavior. Compare it
+   with the default (per-tool prompt) and with `--sandbox`, which only
+   auto-approves commands that stay inside the sandbox.
 
+7. **Switch models**:
    ```bash
-   # Compare with YOLO mode
-   gemini --approval-mode yolo
-   ```
+   # List available models
+   agy models
 
-   Try creating files and observe the difference.
-
-7. **Environment variables**:
+   # Launch with a specific model
+   agy --model "Gemini 3.5 Flash (Low)"
    ```
-   Create a .gemini/.env file with:
-   GEMINI_MODEL=gemini-2.5-flash
-
-   Then restart Gemini and verify the model change.
-   ```
+   Or switch mid-session with `/model`.
 
 ### Expected Outcomes
 
 - Configure project-specific settings
-- Understand sandbox and checkpointing
-- Practice different approval modes
-- Set up environment-based configuration
+- Understand sandbox mode and Artifact Review
+- Practice permission rules and modes
+- Switch between available models
 
 [← Back to Table of Contents](#table-of-contents)
 
@@ -481,190 +485,144 @@ echo "# Config Test" > README.md
 
 **Duration**: 30 minutes
 
-**Goal**: Master MCP servers, extensions, custom commands, and session management
+**Goal**: Master MCP servers, plugins, skills, and session management
 
 ### Part A: Session Management (5 minutes)
 
 1. **Create a session**:
    Start an interactive session and do some work:
    ```
-   gemini
+   agy
    > Create a simple Python calculator module with add, subtract, multiply, divide
    > Add error handling for division by zero
    > Create tests for the calculator
    ```
-   Exit with `Ctrl+D`
+   Exit with `Ctrl+D` `Ctrl+D` (press twice).
 
-2. **List sessions**:
+2. **Continue the most recent conversation**:
    ```bash
-   gemini --list-sessions
-   ```
-
-3. **Resume session**:
-   ```bash
-   gemini --resume
+   agy -c
    ```
    Continue where you left off:
    ```
    Add a power function to the calculator and update the tests
    ```
 
-4. **Session browser and rewind**:
+3. **Resume a specific conversation**:
+   ```bash
+   agy --conversation <id>
+   ```
+
+4. **Conversation browser**:
    In interactive mode, run:
    ```
    /resume
-   /rewind
    ```
-   Review what each workflow enables and when you'd prefer one over the other.
+   Browse and select earlier conversations (stored in SQLite).
 
-### Part B: Custom Commands (10 minutes)
+### Part B: Plugins and Skills (10 minutes)
 
-5. **Create a review command**:
+5. **List installed plugins**:
    ```bash
-   mkdir -p ~/.gemini/commands
+   agy plugin list
+   ```
+   Plugins bundle **skills** and **subagents** that the CLI discovers
+   automatically.
+
+6. **Import existing plugins**:
+   ```bash
+   # Reuse plugins you already have from Gemini or Claude
+   agy plugin import gemini
    ```
 
-   Then create the file `~/.gemini/commands/review.toml` with:
-   ```toml
-   description = "Review code for security, performance, and best practices"
-
-   prompt = """
-   Review the provided code for:
-   - Security vulnerabilities (injection, credentials, validation)
-   - Performance issues (inefficient algorithms, resource leaks)
-   - Best practices and code quality
-
-   Provide findings with severity levels:
-   - CRITICAL: Must fix before deployment
-   - WARNING: Should fix soon
-   - INFO: Consider improving
-
-   {{args}}
-   """
+7. **Install from a marketplace**:
+   ```bash
+   agy plugin install <name>@<marketplace>
+   agy plugin enable <name>
    ```
-
-6. **Test the custom command**:
-   In a new session, create a file to review:
-   ```
-   Create a file called sample.py with some intentionally problematic code:
-   - SQL injection vulnerability
-   - Hardcoded credentials
-   - Inefficient loop
-   ```
-
-   Then use your command:
-   ```
-   /review @./sample.py
-   ```
-
-7. **Create a docs command**:
-   Create the file `~/.gemini/commands/docs.toml` with:
-   ```toml
-   description = "Generate documentation for code"
-
-   prompt = """
-   Generate comprehensive documentation for the provided code:
-   - Function signatures with parameters and return types
-   - Usage examples
-   - Markdown format suitable for a README
-
-   {{args}}
-   """
-   ```
+   Skills from installed plugins surface as slash commands via autocomplete.
 
 ### Part C: MCP Server Integration (10 minutes)
 
-8. **List available MCP servers**:
+8. **Locate the MCP config**:
+   Antigravity has no `mcp` subcommand — servers are configured in a JSON
+   file:
    ```bash
-   gemini mcp list
+   $EDITOR ~/.gemini/config/mcp_config.json
    ```
 
-9.  **Configure Firecrawl MCP**:
+9.  **Configure Firecrawl MCP** (stdio server):
+    ```json
+    {
+      "mcpServers": {
+        "firecrawl": {
+          "command": "npx",
+          "args": ["@modelcontextprotocol/server-firecrawl"],
+          "env": { "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}" }
+        }
+      }
+    }
+    ```
+    Restart `agy` so the server loads (servers initialize in parallel).
 
+10. **Configure a remote MCP server** (URL, added in 1.0.5):
+    ```json
+    {
+      "mcpServers": {
+        "remote-tools": { "url": "https://mcp.example.com/sse" }
+      }
+    }
     ```
 
-    Help me configure the Firecrawl MCP server in .gemini/settings.json:
-
-    - Use the @modelcontextprotocol/server-firecrawl package
-
-    - Set up my FIRECRAWL_API_KEY from environment
-
-    - Ensure it allows scraping web content
-
+11. **Test MCP integration**:
+    In a session:
+    ```
+    Use the Firecrawl MCP to search for "latest features of Gemini 3.1 Pro"
+    and summarize the findings.
     ```
 
-
-
-10.  **Test MCP integration**:
-
-    If configured:
-
-    ```
-
-    Use the Firecrawl MCP to search for "latest features of Gemini 3 Pro" and summarize the findings.
-
-    ```
-
-11. **Explore MCP tools**:
+12. **Explore MCP tools**:
     ```
     What MCP tools are available in this session?
     Show me an example of using one of them.
     ```
 
-12. **Prompt quality booster**:
-    ```
-    /prompt-suggest
-    ```
-    Ask Gemini for 3 stronger variants of your last MCP prompt and compare the results.
+### Part D: Non-Interactive (Print) Mode (5 minutes)
 
-### Part D: Output Formats (5 minutes)
-
-13. **JSON output for scripting**:
+13. **Print mode for scripting**:
     ```bash
-    gemini -o json "List the files in current directory and describe each"
+    agy -p "List the files in the current directory and describe each"
     ```
+    Capture the output to a file for downstream processing.
 
-    Observe the structured output format.
-
-14. **Stream JSON**:
+14. **Bound the wait**:
     ```bash
-    gemini -o stream-json "Explain the concept of microservices architecture"
+    agy --print-timeout 2m -p "Explain the concept of microservices architecture"
     ```
-
-    Watch the real-time streaming output.
 
 15. **Piped workflows**:
     ```bash
-    echo "What are the top 5 Python web frameworks?" | gemini -o json
+    echo "What are the top 5 Python web frameworks?" | agy -p
     ```
 
-### Part E: Extensions (optional, 5 minutes)
+### Part E: Subagents (optional, 5 minutes)
 
-16. **List extensions**:
-    ```bash
-    gemini --list-extensions
+16. **Dispatch a subagent**:
+    In a session:
     ```
-
-17. **Create a simple extension**:
+    /agent write unit tests for @./src/calculator.py
     ```
-    Help me create a basic extension at ~/.gemini/extensions/my-tools/
-    that adds a custom tool for formatting code.
-    Include the gemini-extension.json configuration.
-    ```
-
-18. **Enable specific extensions**:
-    ```bash
-    gemini -e my-tools "Format the code in @./src/"
-    ```
+    Subagents run with their own context; their standalone conversations
+    stay separate in `/resume`.
 
 ### Expected Outcomes
 
 After completing this lab:
-- Manage and resume sessions effectively
-- Create reusable custom commands
-- Configure and use MCP servers
-- Use output formats for automation
-- Understand the extension system
+- Manage and resume conversations effectively
+- Install, import, and use plugins and skills
+- Configure and use MCP servers (stdio and remote)
+- Use print mode for automation
+- Dispatch focused work to subagents
 
 [← Back to Table of Contents](#table-of-contents)
 
@@ -674,104 +632,90 @@ After completing this lab:
 
 **Duration**: 30-45 minutes (optional / take-home)
 
-**Goal**: Practice production-oriented workflows for authentication strategy, governance, skills/MCP controls, and CI automation.
+**Goal**: Practice production-oriented workflows for authentication strategy, governance, plugins/MCP controls, and CI automation.
 
 ### Part A: Authentication Strategy (10 minutes)
 
 1. **Compare auth options**:
    Create a short matrix in `AUTH_NOTES.md` that compares:
-   - Login with Google
-   - `GEMINI_API_KEY`
-   - Vertex AI with ADC
-   - Service account credentials for CI
+   - Google Sign-In (interactive)
+   - Device-code flow (remote / SSH machines)
+   - `ANTIGRAVITY_API_KEY` (scripts / headless)
+   - G1 credits for overflow past standard quota
 
    Include when each is preferred and one drawback.
 
-2. **Validate one non-default path**:
-   Choose one of these:
-   - Vertex path (`GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`)
-   - API-key path (`GEMINI_API_KEY`)
-
-   Then run:
+2. **Validate your setup**:
    ```bash
-   gemini --version
-   gemini --list-sessions
+   agy --version
+   agy -p "Reply with OK if you can read this"
    ```
-   Confirm your environment is usable with the chosen auth setup.
+   Confirm your environment is usable with the chosen auth setup. Check
+   `/quota` and `/credits` in an interactive session.
 
 ### Part B: Governance and Safety Controls (10-15 minutes)
 
 3. **Create a team-safe project settings file**:
-   In `.gemini/settings.json`, configure:
-   - `general.defaultApprovalMode` to `auto_edit` or `plan`
-   - `tools.sandbox` enabled
-   - `general.checkpointing.enabled` set to `true`
+   In `.gemini/settings.json`, configure team defaults (UI, tools, editor).
+   Then define permission rules with `/permissions` that **deny** shell
+   commands by default and require explicit approval for risky tools.
 
-   Then create a `policy.toml` file alongside it with a `deny` rule for
-   `run_shell_command` and launch Gemini with `gemini --policy policy.toml`.
-   (The legacy `tools.exclude` key still works but is deprecated as of
-   Gemini CLI 0.30 — the Policy Engine is the forward path.)
+   ```bash
+   # Escape hatch for a trusted, sandboxed run only
+   agy --sandbox --dangerously-skip-permissions
+   ```
 
-4. **Inspect hooks and policy behavior**:
-   In interactive mode, run:
-   ```
-   /hooks list
-   /policies list
-   ```
-   Ask Gemini to explain what each active control does and which risks it reduces.
+4. **Folder trust**:
+   Antigravity tracks trusted folders (`~/.gemini/trustedFolders.json`).
+   Open an untrusted repo and observe how trust affects settings, skills,
+   and context loading. Treat untrusted repos with `--sandbox` and stricter
+   `/permissions` rules.
 
-### Part C: Skills + MCP Hardening (10-15 minutes)
+### Part C: Plugins + MCP Hardening (10-15 minutes)
 
-5. **Skills lifecycle drill**:
-   In interactive mode:
+5. **Plugin lifecycle drill**:
+   ```bash
+   agy plugin list
+   agy plugin disable <one-plugin-name>
+   agy plugin enable <one-plugin-name>
    ```
-   /skills list
-   /skills disable <one-skill-name>
-   /skills enable <one-skill-name>
-   ```
-   Observe how discoverable skills change.
+   Observe how discoverable skills and subagents change.
 
 6. **MCP scoping exercise**:
-   Update one MCP server in `.gemini/settings.json` to:
+   Update one MCP server in `~/.gemini/config/mcp_config.json` to:
    - Add `includeTools` for only the tools you need
    - Add `excludeTools` for at least one sensitive tool
 
-   Then run:
-   ```bash
-   gemini mcp list
-   ```
-   In interactive mode:
-   ```
-   /mcp list
-   /mcp refresh
-   ```
+   Restart `agy` and confirm the narrowed tool surface in a session.
 
 7. **MCP resource prompt practice**:
-   If your MCP server exposes resources, use one URI with `@...` in a prompt and summarize what changed versus a tool-only prompt.
+   If your MCP server exposes resources, reference one in a prompt and
+   summarize what changed versus a tool-only prompt.
 
 ### Part D: CI/Automation Pattern (10 minutes)
 
 8. **Create a repeatable automation check**:
    Add a script snippet to `automation_notes.md`:
    ```bash
-   gemini -o json "Review @./src/ for security issues" > review.json
-   if gemini -o json "Summarize risk level in one sentence"; then
-     echo "Gemini check completed"
+   agy -p "Review @./src/ for security issues" > review.txt
+   if agy -p "Summarize risk level in one sentence"; then
+     echo "Check completed"
    else
-     echo "Gemini check failed" && exit 1
+     echo "Check failed" && exit 1
    fi
    ```
 
 9. **Post-process output**:
-   Parse `review.json` with your preferred tool (`jq`, Node, Python) and extract one field for a simple pass/fail decision.
+   Parse `review.txt` with your preferred tool (`grep`, Node, Python) and
+   extract one signal for a simple pass/fail decision.
 
 ### Expected Outcomes
 
 After completing this optional lab:
 - Choose the right auth method for local, team, and CI contexts
-- Apply practical governance controls with settings, hooks, and policies
-- Restrict MCP/skills behavior to safer team defaults
-- Build a basic non-interactive Gemini CLI automation pattern
+- Apply practical governance controls with settings, permissions, and folder trust
+- Restrict MCP/plugin behavior to safer team defaults
+- Build a basic non-interactive `agy` automation pattern
 
 [← Back to Table of Contents](#table-of-contents)
 
@@ -788,28 +732,29 @@ After completing this optional lab:
 
 ### Best Practices
 
-- Start with default approval mode, use YOLO after building trust
-- Enable checkpointing before risky operations
-- Keep GEMINI.md files updated with current project state
+- Start with the default (per-tool approval) mode; reach for
+  `--dangerously-skip-permissions` only after building trust
+- Use Artifact Review (`Ctrl+R`) and `/diff` before accepting changes
+- Keep AGENTS.md files updated with current project state
 - Commit regularly to have a safety net
 - Review all AI-generated code before accepting
 
 ### Common Issues and Solutions
 
-**Issue**: Gemini doesn't understand the project structure
-**Solution**: Create a comprehensive GEMINI.md with architecture details
+**Issue**: The agent doesn't understand the project structure
+**Solution**: Create a comprehensive AGENTS.md with architecture details
 
 **Issue**: Generated code doesn't match project style
-**Solution**: Add coding standards to your GEMINI.md
+**Solution**: Add coding standards to your AGENTS.md
 
-**Issue**: API rate limits
-**Solution**: Use Gemini 2.5 Flash for faster, cheaper operations
+**Issue**: Rate limits
+**Solution**: Check `/quota`; G1 credits cover overflow, or switch to a faster model like Gemini 3.5 Flash
 
 **Issue**: Context not loading
-**Solution**: Run `/memory refresh` and check file paths
+**Solution**: Confirm your AGENTS.md location and reload the session; check with `/context`
 
 **Issue**: MCP server not connecting
-**Solution**: Check server configuration in settings.json, then use `gemini mcp list` and `/mcp refresh`
+**Solution**: Check `~/.gemini/config/mcp_config.json`, then restart `agy` to reload servers
 
 ---
 
@@ -817,15 +762,14 @@ After completing this optional lab:
 
 After completing these labs:
 
-1. **Practice daily**: Use Gemini CLI for regular development tasks
-2. **Customize**: Build your personal GEMINI.md and command library
+1. **Practice daily**: Use the Antigravity CLI for regular development tasks
+2. **Customize**: Build your personal AGENTS.md and plugin/skill library
 3. **Explore MCP**: Set up servers for your common tools and services
 4. **Share**: Document workflows for your team
-5. **Stay updated**: Follow Gemini CLI releases for new features
+5. **Stay updated**: Run `agy changelog` and `agy update` to follow releases
 
 ## Additional Resources
 
-- <a href="https://github.com/google-gemini/gemini-cli" target="_blank">Gemini CLI Documentation</a>
-- <a href="https://aistudio.google.com/" target="_blank">Google AI Studio</a> - API keys and playground
+- <a href="https://antigravity.google/docs" target="_blank">Antigravity CLI Documentation</a>
+- <a href="https://github.com/google-antigravity/antigravity-cli" target="_blank">Antigravity CLI Source Repository</a>
 - <a href="https://modelcontextprotocol.io/registry" target="_blank">MCP Server Registry</a>
-- <a href="https://www.philschmid.de/gemini-cli-cheatsheet" target="_blank">Gemini CLI Cheatsheet</a>
